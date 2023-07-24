@@ -2,14 +2,13 @@ plugins {
     id 'java'
 }
 
-group 'net.starly.boilerplate' // TODO: 수정
+group 'net.starly.home'
 version '1.0'
 
 repositories {
     mavenCentral()
     maven {
-        url = "http://starly.kr:8083/repository/maven-public/"
-        allowInsecureProtocol = true
+        url = "https://repo.starly.kr/repository/maven-public/"
     }
 }
 
@@ -20,7 +19,7 @@ dependencies {
     annotationProcessor "org.projectlombok:lombok:1.18.28"
 
     //BUKKIT DEPENDENCIES
-    compileOnly "org.spigotmc:spigot-api:R0.1:1.12.2"
+    compileOnly "org.spigotmc:spigot:R0.1:1.12.2"
 
     // OTHER DEPENDENCIES
     compileOnly "net.starly.core:ST-Core:1.8.1"
@@ -28,4 +27,8 @@ dependencies {
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
+}
+
+jar {
+    destinationDirectory.set(file('E:\\테스트서버\\1.12.2\\plugins'))
 }

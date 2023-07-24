@@ -1,48 +1,48 @@
-package net.starly.boilerplate;
+package net.starly.home;
 
+import lombok.Getter;
 import net.starly.core.bstats.Metrics;
-import org.bukkit.plugin.Plugin;
+import net.starly.home.command.HomeCommand;
+import net.starly.home.context.MessageContent;
+import net.starly.home.listener.PlayerJoinListener;
+import net.starly.home.manager.PlayerHomeDataManager;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class BoilerPlateMain extends JavaPlugin {
+public class Home extends JavaPlugin {
 
-    private static BoilerPlateMain instance;
-    public static BoilerPlateMain getInstance() {
-        return instance;
+    @Getter private static Home instance;
+    private PlayerHomeDataManager manager;
+
+    @Override
+    public void onLoad() { instance = this; }
+
+    @Override
+    public void onEnable() {
+        /* SETUP
+         ──────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
+//        new Metrics(this, 12345); // TODO: 수정
+
+        /* CONFIG
+         ──────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
+        saveDefaultConfig();
+        MessageContent.getInstance().initialize(getConfig());
+
+        manager = PlayerHomeDataManager.getInstance();
+        manager.load();
+
+        /* COMMAND
+         ──────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
+        getCommand("home").setExecutor(new HomeCommand());
+
+        /* LISTENER
+         ──────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
+        Bukkit.getPluginManager().registerEvents(new PlayerJoinListener(), this);
     }
 
 
     @Override
-    public void onEnable() {
-        /* DEPENDENCY
-         ──────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
-        if (!isPluginEnabled("ST-Core")) {
-            getServer().getLogger().warning("[" + getName() + "] ST-Core 플러그인이 적용되지 않았습니다! 플러그인을 비활성화합니다.");
-            getServer().getLogger().warning("[" + getName() + "] 다운로드 링크 : §fhttp://starly.kr/");
-            getServer().getPluginManager().disablePlugin(this);
-            return;
-        }
-
-        /* SETUP
-         ──────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
-        instance = this;
-        new Metrics(this, 12345); // TODO: 수정
-
-        /* CONFIG
-         ──────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
-        // TODO: 수정
-
-        /* COMMAND
-         ──────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
-        // TODO: 수정
-
-        /* LISTENER
-         ──────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
-        // TODO: 수정
-    }
-
-    private boolean isPluginEnabled(String name) {
-        Plugin plugin = getServer().getPluginManager().getPlugin(name);
-        return plugin != null && plugin.isEnabled();
+    public void onDisable() {
+        if (manager != null) manager.save();
     }
 }
