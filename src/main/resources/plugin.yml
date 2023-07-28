@@ -1,5 +1,5 @@
 name: ST-Home
-main: net.starly.home.Home
+main: net.starly.home.HomeMain
 author: Starly Team
 website: http://starly.kr/
 
@@ -14,3 +14,6 @@ api-version: 1.13
 commands:
   home:
     aliases: [ 홈 ]
+
+  homeSetting:
+    aliases: [ 홈세팅 ]

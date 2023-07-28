@@ -1,18 +1,22 @@
 package net.starly.home;
 
 import lombok.Getter;
-import net.starly.core.bstats.Metrics;
 import net.starly.home.command.HomeCommand;
+import net.starly.home.command.HomeSettingCommand;
 import net.starly.home.context.MessageContent;
-import net.starly.home.listener.PlayerJoinListener;
-import net.starly.home.manager.PlayerHomeDataManager;
+import net.starly.home.listener.*;
+import net.starly.home.manager.HomeManager;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.HumanEntity;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class Home extends JavaPlugin {
+import java.io.File;
+import java.util.Arrays;
 
-    @Getter private static Home instance;
-    private PlayerHomeDataManager manager;
+public class HomeMain extends JavaPlugin {
+
+    @Getter private static HomeMain instance;
 
     @Override
     public void onLoad() { instance = this; }
@@ -28,21 +32,38 @@ public class Home extends JavaPlugin {
         saveDefaultConfig();
         MessageContent.getInstance().initialize(getConfig());
 
-        manager = PlayerHomeDataManager.getInstance();
-        manager.load();
+        HomeManager homeManager = HomeManager.getInstance();
+        homeManager.loadAll();
+
+        File dataFolder = new File(getDataFolder(), "data/");
+        if (!dataFolder.exists()) dataFolder.mkdirs();
 
         /* COMMAND
          ──────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
         getCommand("home").setExecutor(new HomeCommand());
+        getCommand("homeSetting").setExecutor(new HomeSettingCommand());
 
         /* LISTENER
          ──────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
-        Bukkit.getPluginManager().registerEvents(new PlayerJoinListener(), this);
+        registerListeners(
+                new JoinQuitListener(),
+                new InventoryClickListener(),
+                new PlayerMoveListener(),
+                new PlayerChatListener()
+        );
     }
-
 
     @Override
     public void onDisable() {
-        if (manager != null) manager.save();
+        HomeManager homeManager = HomeManager.getInstance();
+        homeManager.saveAll();
+
+        Bukkit.getOnlinePlayers().forEach(HumanEntity::closeInventory);
+    }
+
+    private void registerListeners(Listener... listeners) {
+        Arrays.stream(listeners).forEach(listener -> {
+            Bukkit.getPluginManager().registerEvents(listener, this);
+        });
     }
 }

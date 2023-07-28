@@ -1,15 +1,19 @@
 package net.starly.home.command;
 
-import net.starly.home.Home;
+import net.starly.home.HomeMain;
 import net.starly.home.context.MessageContent;
 import net.starly.home.context.MessageType;
-import net.starly.home.manager.PlayerHomeDataManager;
+import net.starly.home.manager.HomeManager;
 import net.starly.home.util.HomeUtil;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+
+import java.io.File;
 
 public class HomeCommand implements CommandExecutor {
 
@@ -17,14 +21,16 @@ public class HomeCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
         MessageContent content = MessageContent.getInstance();
-        Plugin plugin = Home.getInstance();
+        Plugin plugin = HomeMain.getInstance();
 
         if (args.length > 0 && ("리로드".equalsIgnoreCase(args[0]) || "reload".equalsIgnoreCase(args[0]))) {
             if (!sender.isOp()) {
                 content.getMessageAfterPrefix(MessageType.ERROR, "noPermission").ifPresent(sender::sendMessage);
-                PlayerHomeDataManager.getInstance().save();
                 return false;
             }
+
+            HomeManager homeManager = HomeManager.getInstance();
+            homeManager.saveAll();
 
             plugin.reloadConfig();
             content.initialize(plugin.getConfig());

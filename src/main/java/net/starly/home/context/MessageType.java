@@ -8,7 +8,8 @@ import lombok.Getter;
 public enum MessageType {
 
     ERROR("errorMessages"),
-    NORMAL("messages");
+    NORMAL("messages"),
+    DATA("data");
 
     private final String key;
 }
