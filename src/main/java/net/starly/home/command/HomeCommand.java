@@ -1,15 +1,13 @@
 package net.starly.home.command;
 
 import net.starly.home.HomeMain;
-import net.starly.home.context.MessageContent;
-import net.starly.home.context.MessageType;
+import net.starly.home.message.MessageContent;
+import net.starly.home.message.MessageType;
 import net.starly.home.manager.HomeManager;
 import net.starly.home.util.HomeUtil;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -21,7 +19,7 @@ public class HomeCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
         MessageContent content = MessageContent.getInstance();
-        Plugin plugin = HomeMain.getInstance();
+        HomeMain plugin = HomeMain.getInstance();
 
         if (args.length > 0 && ("리로드".equalsIgnoreCase(args[0]) || "reload".equalsIgnoreCase(args[0]))) {
             if (!sender.isOp()) {
@@ -33,6 +31,7 @@ public class HomeCommand implements CommandExecutor {
             homeManager.saveAll();
 
             plugin.reloadConfig();
+
             content.initialize(plugin.getConfig());
             content.getMessageAfterPrefix(MessageType.NORMAL, "reloadComplete").ifPresent(sender::sendMessage);
             return true;
@@ -47,6 +46,7 @@ public class HomeCommand implements CommandExecutor {
 
         if (args.length == 0) {
             // TODO 홈 메뉴
+
             HomeUtil.getInstance().openHomeMenu(player);
             return true;
         }

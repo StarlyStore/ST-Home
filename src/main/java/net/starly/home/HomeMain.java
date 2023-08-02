@@ -3,7 +3,7 @@ package net.starly.home;
 import lombok.Getter;
 import net.starly.home.command.HomeCommand;
 import net.starly.home.command.HomeSettingCommand;
-import net.starly.home.context.MessageContent;
+import net.starly.home.message.MessageContent;
 import net.starly.home.listener.*;
 import net.starly.home.manager.HomeManager;
 import org.bukkit.Bukkit;
@@ -16,10 +16,14 @@ import java.util.Arrays;
 
 public class HomeMain extends JavaPlugin {
 
-    @Getter private static HomeMain instance;
+
+    @Getter
+    private static HomeMain instance;
 
     @Override
-    public void onLoad() { instance = this; }
+    public void onLoad() {
+        instance = this;
+    }
 
     @Override
     public void onEnable() {
@@ -35,6 +39,15 @@ public class HomeMain extends JavaPlugin {
         HomeManager homeManager = HomeManager.getInstance();
         homeManager.loadAll();
 
+        try {
+            File configFile = new File(getDataFolder(), "config.yml");
+            if (!configFile.exists()) {
+                saveDefaultConfig();
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
         File dataFolder = new File(getDataFolder(), "data/");
         if (!dataFolder.exists()) dataFolder.mkdirs();
 
@@ -49,7 +62,8 @@ public class HomeMain extends JavaPlugin {
                 new JoinQuitListener(),
                 new InventoryClickListener(),
                 new PlayerMoveListener(),
-                new PlayerChatListener()
+                new PlayerChatListener(),
+                new InventoryCloseListener()
         );
     }
 

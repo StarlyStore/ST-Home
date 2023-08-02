@@ -1,7 +1,7 @@
 package net.starly.home.command;
 
-import net.starly.home.context.MessageContent;
-import net.starly.home.context.MessageType;
+import net.starly.home.message.MessageContent;
+import net.starly.home.message.MessageType;
 import net.starly.home.util.HomeUtil;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

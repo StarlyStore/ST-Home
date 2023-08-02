@@ -1,4 +1,4 @@
-package net.starly.home.context;
+package net.starly.home.message;
 
 import net.starly.core.jb.util.Pair;
 import org.bukkit.ChatColor;

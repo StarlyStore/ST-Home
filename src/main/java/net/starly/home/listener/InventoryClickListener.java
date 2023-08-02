@@ -2,8 +2,8 @@ package net.starly.home.listener;
 
 import net.starly.core.data.Time;
 import net.starly.home.HomeMain;
-import net.starly.home.context.MessageContent;
-import net.starly.home.context.MessageType;
+import net.starly.home.message.MessageContent;
+import net.starly.home.message.MessageType;
 import net.starly.home.data.Home;
 import net.starly.home.enums.ChatType;
 import net.starly.home.enums.GuiType;
@@ -33,10 +33,9 @@ public class InventoryClickListener implements Listener {
         HomeUtil homeUtil = HomeUtil.getInstance();
         HashMap<UUID, GuiType> playerGuiTypeMap = homeUtil.getPlayerGuiTypeMap();
 
-        event.setCancelled(true);
+        if (playerGuiTypeMap.containsKey(player.getUniqueId())) event.setCancelled(true);
 
         if (playerGuiTypeMap.get(player.getUniqueId()) == GuiType.OPEN) {
-
             int slot = event.getSlot() - 11;
 
             if (event.isLeftClick() && event.isShiftClick()) {
@@ -88,6 +87,7 @@ public class InventoryClickListener implements Listener {
                     return;
                 }
                 Location location = homeManager.getHome(player.getUniqueId(), slot).getLocation();
+
                 player.closeInventory();
 
                 int timeValue = config.getInt("data.time");

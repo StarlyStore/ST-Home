@@ -15,6 +15,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -32,7 +33,8 @@ public class HomeUtil {
 
     private static HomeUtil instance;
 
-    private HomeUtil() {}
+    private HomeUtil() {
+    }
 
     public static HomeUtil getInstance() {
         if (instance == null) instance = new HomeUtil();
@@ -47,33 +49,67 @@ public class HomeUtil {
         Inventory inventory = Bukkit.createInventory(player, 9 * 3, "홈 메뉴");
         ItemStack itemStack;
         itemStack = new ItemBuilder(Material.BARRIER)
-                .setName("지정 되지 않음")
+                .setName("§f지정 되지 않음")
                 .build();
         for (int i = 11; i <= 15; i++) inventory.setItem(i, itemStack);
         for (int i = 0; i <= homeCount - 1; i++) {
             Location location = homeManager.getHome(player.getUniqueId(), i).getLocation();
-            itemStack = new ItemBuilder(Material.BED)
-                    .setName((i+1) + "번 홈")
-                    .setLore("§f월드 : " + location.getWorld().getName(), "§fx : " + String.format("%.3f", location.getX()), "§fy : " + String.format("%.3f", location.getY()), "§fz : " + String.format("%.3f", location.getZ()))
-                    .build();
+            try {
+                itemStack = new ItemBuilder(Material.valueOf("BED"))
+                        .setName((i + 1) + "번 홈")
+                        .setLore("§f월드 : " + location.getWorld().getName(), "§fx : " + String.format("%.3f", location.getX()), "§fy : " + String.format("%.3f", location.getY()), "§fz : " + String.format("%.3f", location.getZ()))
+                        .build();
+            } catch (Exception ignored) {
+                itemStack = new ItemBuilder(Material.valueOf("WHITE_BED"))
+                        .setName((i + 1) + "번 홈")
+                        .setLore("§f월드 : " + location.getWorld().getName(), "§fx : " + String.format("%.3f", location.getX()), "§fy : " + String.format("%.3f", location.getY()), "§fz : " + String.format("%.3f", location.getZ()))
+                        .build();
+            }
             inventory.setItem(i + 11, itemStack);
         }
+        try {
+            itemStack = new ItemBuilder(Material.valueOf("BOOK_AND_QUILL"))
+                    .setName("§f사용법")
+                    .setLore("§f좌클릭: 홈으로 이동", "§f쉬프트 + 좌클릭: 홈 지정", "§f쉬프트 + 우클릭: 홈 삭제")
+                    .build();
+        } catch (Exception ignored) {
+            itemStack = new ItemBuilder(Material.valueOf("WRITABLE_BOOK"))
+                    .setName("§f사용법")
+                    .setLore("§f좌클릭: 홈으로 이동", "§f쉬프트 + 좌클릭: 홈 지정", "§f쉬프트 + 우클릭: 홈 삭제")
+                    .build();
+        }
+
+
+
+        inventory.setItem(22, itemStack);
+
         playerGuiTypeMap.put(player.getUniqueId(), GuiType.OPEN);
         player.openInventory(inventory);
     }
 
     public void openHomeSettingMenu(Player player) {
+        Plugin plugin = HomeMain.getInstance();
         FileConfiguration config = plugin.getConfig();
         Inventory inventory = Bukkit.createInventory(player, 9 * 3, "홈 세팅");
         ItemStack itemStack;
 
-        int time = config.getInt("data.time");
-        boolean move = config.getBoolean("data.move");
+        int time = (int) config.get("data.time");
+        boolean move = (boolean) config.get("data.move");
 
-        itemStack = new ItemBuilder(Material.WATCH)
-                .setName("§f시간 설정")
-                .setLore("§f현재값 : " + time + "초")
-                .build();
+
+        try {
+            itemStack = new ItemBuilder(Material.valueOf("CLOCK"))
+                    .setName("§f시간 설정")
+                    .setLore("§f현재값 : " + time + "초")
+                    .build();
+        } catch (Exception ignored) {
+            itemStack = new ItemBuilder(Material.valueOf("WATCH"))
+                    .setName("§f시간 설정")
+                    .setLore("§f현재값 : " + time + "초")
+                    .build();
+
+        }
+
         inventory.setItem(11, itemStack);
 
         itemStack = new ItemBuilder(Material.CHAINMAIL_BOOTS)

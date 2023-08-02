@@ -1,4 +1,4 @@
-package net.starly.home.context;
+package net.starly.home.message;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

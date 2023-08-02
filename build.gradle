@@ -30,5 +30,5 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 jar {
-    destinationDirectory.set(file('E:\\테스트서버\\1.12.2\\plugins'))
+    destinationDirectory.set(file('E:\\테스트서버\\1.20.1\\plugins'))
 }

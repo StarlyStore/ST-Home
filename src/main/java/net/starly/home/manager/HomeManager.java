@@ -6,6 +6,7 @@ import net.starly.home.data.Home;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.*;
@@ -30,9 +31,11 @@ public class HomeManager {
     }
 
     public void save(UUID uniqueId) {
-        JavaPlugin plugin = HomeMain.getInstance();
+        Plugin plugin = HomeMain.getInstance();
         File directory = new File(plugin.getDataFolder(), "data");
         File dataFile = new File(directory, uniqueId + ".json");
+        if (!directory.exists()) directory.mkdir();
+        if (!dataFile.exists()) return;
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonObject jsonObject = new JsonObject();
         JsonObject homesObject = new JsonObject();
@@ -49,16 +52,6 @@ public class HomeManager {
 
         jsonObject.add("homes", homesObject);
 
-        if (!directory.exists()) directory.mkdir();
-
-        if (!dataFile.exists()) {
-            try {
-                dataFile.createNewFile();
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        }
-
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(dataFile))) {
             gson.toJson(jsonObject, writer);
         } catch (IOException e) {
@@ -67,7 +60,7 @@ public class HomeManager {
     }
 
     public void loadAll() {
-        JavaPlugin plugin = HomeMain.getInstance();
+        Plugin plugin = HomeMain.getInstance();
         File dataFolder = new File(plugin.getDataFolder(), "data/");
 
         if (!dataFolder.exists()) dataFolder.mkdir();
@@ -80,7 +73,7 @@ public class HomeManager {
 
 
     public void load(UUID uniqueId) {
-        JavaPlugin plugin = HomeMain.getInstance();
+        Plugin plugin = HomeMain.getInstance();
         File directory = new File(plugin.getDataFolder(),"data");
         File dataFile = new File(directory, uniqueId + ".json");
 
